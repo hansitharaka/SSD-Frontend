@@ -1,3 +1,4 @@
+import React from 'react';
 import './bootstrap.css';
 
 import Frontend from './Components/Frontend';
