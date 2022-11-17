@@ -8,8 +8,8 @@ import { Button, Tab, Tabs, Container, Row, Col} from 'react-bootstrap';
 class Home extends Component {
 
     constructor(props) {
-        super(props);      
-        
+        super(props);
+
         this.state = {
             role: ''
         }
@@ -28,7 +28,7 @@ class Home extends Component {
     logoutClicked() {
         AuthenticationService.logout();
 
-        // redirect to login
+        // redirect to log in
         this.props.history.push("/");
     }
 
@@ -45,7 +45,7 @@ class Home extends Component {
                                 className="mb-3 pt-3 px-3"
                                 fill
                                 justify
-                                >
+                            >
                                 <Tab eventKey="msg" title="Messages">
                                     <Message />
                                 </Tab>
@@ -53,16 +53,16 @@ class Home extends Component {
                                 {
                                     this.state.role === 'manager' || this.state.role === 'admin' ?
 
-                                    <Tab eventKey="file" title="Files">
-                                        <FileUpload />
-                                    </Tab>
-                                    : ''
+                                        <Tab eventKey="file" title="Files">
+                                            <FileUpload />
+                                        </Tab>
+                                        : ''
                                 }
                             </Tabs>
                             <Button variant="dark" className={"py-2 px-4 mx-3 mt-3"} onClick={this.logoutClicked}>Logout</Button>
                         </div>
 
-                    </Col>     
+                    </Col>
                 </Row>
             </Container>
         );
