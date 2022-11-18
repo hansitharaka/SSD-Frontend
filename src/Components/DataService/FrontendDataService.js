@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_URL = 'https://localhost:8443';
+const API_URL = 'http://localhost:8000';
 
 class FrontendDataService {
 
@@ -9,13 +9,11 @@ class FrontendDataService {
     }
 
     sendMessage(message, header) {
-        // return axios.post(`${API_URL}/message/addmessage`, message, { headers: header });
-        console.log(axios.post('https://localhost:8443/message/addmessage', message, { headers: header }))
+        return axios.post(`${API_URL}/message/addmessage`, message, { headers: header });
     }
 
     uploadFile(data, header) {
-        // return axios.post(`${API_URL}/message/upload`, data, { headers: header });
-        console.log(axios.post('https://localhost:8443/message/upload', data, { headers: header }))
+        return axios.post(`${API_URL}/message/upload`, data, { headers: header });
     }
 
 }
