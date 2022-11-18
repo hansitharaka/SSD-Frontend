@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import FrontendDataService from './DataService/FrontendDataService';
+import { withRouter} from 'react-router-dom';
 import Swal from "sweetalert2";
 
 import { Button, Card, Form } from 'react-bootstrap';
@@ -7,13 +8,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import AuthenticationService from './DataService/AuthenticationService';
 
-export default class Message extends Component {
+class Message extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
             username: '',
-            message: '',           
+            token: '',
+            message: '',
             hasLoginFailed: false,
             showSuccessMsg: false
         }
@@ -25,9 +27,9 @@ export default class Message extends Component {
 
     componentDidMount() {
 
-        const loggedUser = AuthenticationService.loggedUserName();
         this.setState({
-            username: loggedUser
+            username: AuthenticationService.loggedUserName(),
+            token: AuthenticationService.loggedUserToken(),
         });
     }
 
@@ -37,7 +39,14 @@ export default class Message extends Component {
         })
     }
 
-    handleSubmit(event) {
+    logoutClicked() {
+        AuthenticationService.logout();
+
+        // redirect to log in
+        this.props.history.push("/");
+    }
+
+    async handleSubmit(event) {
         event.preventDefault();
 
         const msg = this.state.message;
@@ -47,39 +56,61 @@ export default class Message extends Component {
                 icon: 'warning',
                 title: 'Message cannot be empty',
                 background: '#fff',
-                confirmButtonColor: '#3aa2e7',
+                confirmButtonColor: '#7a7a7a',
                 iconColor: '#e0b004'
             })
         } else {
-            console.log(this.state.message)
 
-            const formData = new FormData();
-            formData.append('content', this.state.message)
-            formData.append('sender', this.state.username)
-            formData.append('audiencetype', "private")
-
-            const config = {
-                headers: {
-                    "Authorization": "Bearer xxxx-xxxx-xxxx" //include token
-                }
+            const sendMsg = {
+                "Id": "",
+                "content": msg,
+                "sender": this.state.username,
+                "audienceType": "Private",
+                "receivers": null
             }
 
-            // FrontendDataService.sendMessage(formData, config)
-            //     .then( res => {
-            //         // if success
+            const config = {
+                "Authorization": "Bearer " + this.state.token,
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*",
+             "Access-Control-Allow-Headers": 'Origin, X-Requested-With, Content-Type, Accept ',
+            "Access-Control-Allow-Methods": "POST, GET, PUT, OPTIONS, DELETE" ,
+             "Access-Control-Max-Age": 3600
+            }
 
-            //         Swal.fire({
-            //             icon: 'success',
-            //             title: 'Message sent successfully',
-            //             background: '#fff',
-            //             confirmButtonColor: '#3aa2e7',
-            //             iconColor: '#60e004'
-            //         })
-            //        this.clearData()
-            //     })            
-            //     .catch(err => {
-            //         console.log(err.data)
-            //     })
+            FrontendDataService.sendMessage(sendMsg, config)
+                // .then( res => {
+                //
+                //     console.log(res)
+                //     if (res.status === 200 || res.data) {
+                //         //sucess
+                //
+                //     } else if (res.status === 401) {
+                //         // token expired
+                //         Swal.fire({
+                //             icon: 'warning',
+                //             title: 'Session Timeout',
+                //             background: '#fff',
+                //             confirmButtonColor: '#7a7a7a',
+                //             iconColor: '#e0b004'
+                //         })
+                //
+                //         this.logoutClicked();
+                //
+                //     }
+                //
+                //     // Swal.fire({
+                //     //     icon: 'success',
+                //     //     title: 'Message sent successfully',
+                //     //     background: '#fff',
+                //     //     confirmButtonColor: '#3aa2e7',
+                //     //     iconColor: '#60e004'
+                //     // })
+                //     this.clearData()
+                // })
+                // .catch(err => {
+                //     console.log(err.data)
+                // })
         }
     }
 
@@ -98,11 +129,11 @@ export default class Message extends Component {
                         <Card.Title>Send a message</Card.Title>
                         <Card.Text className='pt-2'>
                         <textarea name="username" className="form-control" placeholder={"Type your message here..."}
-                                    value={this.state.message} required onChange={this.handleChange}/>
+                                  value={this.state.message} required onChange={this.handleChange}/>
                         </Card.Text>
                         <Button type="submit" variant="outline-success" className={"py-2 px-4"} >
-                                Send &nbsp; <FontAwesomeIcon icon={faPaperPlane} />
-                                </Button>
+                            Send &nbsp; <FontAwesomeIcon icon={faPaperPlane} />
+                        </Button>
 
                     </Form>
                 </Card.Body>
@@ -110,3 +141,5 @@ export default class Message extends Component {
         );
     }
 }
+
+export default withRouter(Message);
