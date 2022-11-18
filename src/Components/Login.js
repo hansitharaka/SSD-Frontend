@@ -12,7 +12,6 @@ class Login extends Component {
         this.state = {
             username: '',
             password: '',
-            role: '',
             hasLoginFailed: false,
             showSuccessMsg: false
         }
@@ -26,50 +25,51 @@ class Login extends Component {
         )
     }
 
-    loginClicked() {
-        if (this.state.username === '' || this.state.password === '' || this.state.role === '') {
+    loginClicked(event) {
+        event.preventDefault();
+
+        if (this.state.username === '' || this.state.password === '' ) {
             Swal.fire({
                 icon: 'warning',
-                title: 'Fileds cannot be empty',
+                title: 'Fields cannot be empty',
                 background: '#fff',
                 confirmButtonColor: '#3aa2e7',
                 iconColor: '#e0b004'
             })
         } else {
-            const formData = new FormData();
-            formData.append('username', this.state.username)
-            formData.append('password', this.state.password)
 
-            this.props.history.push("/home");
-            AuthenticationService.successfulLogin(this.state.username, this.state.role)
-        //     FrontendDataService.authenticateUser(formData)
-        //         .then(
-        //             response => {
-        //                 if (response.data != null) {
-        //                     if (true) {
-                                // AuthenticationService.successfulLogin(response.data.username, response.data.role)
-                                
-        // this.props.history.push("/message")
-        //                     } else {
-        //                         Swal.fire({
-        //                             icon: 'error',
-        //                             title: 'Wrong username or password',
-        //                             background: '#041c3d',
-        //                             iconColor: '#e00404',
-        //                             confirmButtonColor: '#3aa2e7'
-        //                         })
-        //                     }
-        //                 } else {
-        //                     Swal.fire({
-        //                         icon: 'error',
-        //                         title: 'Wrong username or password',
-        //                         background: '#041c3d',
-        //                         iconColor: '#e00404',
-        //                         confirmButtonColor: '#3aa2e7'
-        //                     })
-        //                 }
-        //             }
-        //         )
+            const user = {
+                "username": this.state.username,
+                "password": this.state.password
+            }
+
+            FrontendDataService.authenticateUser(user)
+                .then( res => {
+                    if (res.status === 200 && res.data) {
+                        AuthenticationService.successfulLogin(this.state.username, res.data.role, res.data.token)
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Login successfully',
+                            background: '#fff',
+                            confirmButtonColor: '#7a7a7a',
+                            iconColor: '#479600'
+                        })
+
+                        this.props.history.push("/home");
+                    }
+
+                }).catch( error => {
+                console.log(error);
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Login Failed',
+                    background: '#fff',
+                    confirmButtonColor: '#7a7a7a',
+                    iconColor: '#e00404'
+                })
+            })
         }
 
     }
@@ -88,7 +88,7 @@ class Login extends Component {
                                             Username
                                         </label>
                                         <input type="text" name="username" className="form-control" placeholder={"ex: John Mayer"}
-                                            value={this.state.username} required onChange={this.handleChange}/>
+                                               value={this.state.username} required onChange={this.handleChange}/>
                                     </div>
 
                                     <div className={"mb-3"}>
@@ -96,34 +96,7 @@ class Login extends Component {
                                             Password
                                         </label>
                                         <input type="password" name="password" className="form-control" placeholder="Password"
-                                            value={this.state.password} required onChange={this.handleChange}/>
-                                    </div>
-
-                                    <div className={"mb-3 text-center"}>
-                                        <Row>
-                                            <Col xs={4}>
-                                                <div className="radio">
-                                                    <label>
-                                                        <input type="radio" name="role" defaultChecked={this.state.role === "worker"} value="worker" onChange={this.handleChange} /> Worker
-                                                    </label>
-                                                </div>
-                                            </Col>
-                                            <Col xs={4}>
-                                                <div className="radio">
-                                                    <label>
-                                                        <input type="radio" name="role" defaultChecked={this.state.role === "manager"} value="manager" onChange={this.handleChange} /> Manager
-                                                    </label>
-                                                </div>
-                                            </Col>
-                                            <Col xs={4}>
-                                                <div className="radio">
-                                                    <label>
-                                                        <input type="radio" name="role" defaultChecked={this.state.role === "admin"} value="admin" onChange={this.handleChange} /> Admin
-                                                    </label>
-                                                </div>
-                                            </Col>
-                                        </Row>
-                                        
+                                               value={this.state.password} required onChange={this.handleChange}/>
                                     </div>
 
                                     <div className={"mb-3 mt-4"}>

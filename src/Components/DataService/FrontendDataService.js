@@ -1,12 +1,11 @@
 import axios from 'axios'
 
-const API_URL = 'http://localhost:8080';
+const API_URL = 'https://localhost:8443';
 
 class FrontendDataService {
 
     authenticateUser(data){
         return axios.post(`${API_URL}/user/signin`, data);
-        return true;
     }
 
     sendMessage(message) {
