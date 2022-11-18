@@ -13,6 +13,7 @@ export default class FileUpload extends Component {
         super(props);
         this.state = {
             username: '',
+            token: '',
             file: undefined,
             hasLoginFailed: false,
             showSuccessMsg: false
@@ -25,9 +26,9 @@ export default class FileUpload extends Component {
 
     componentDidMount() {
 
-        const loggedUser = AuthenticationService.loggedUserName();
         this.setState({
-            username: loggedUser
+            username: AuthenticationService.loggedUserName(),
+            token: AuthenticationService.loggedUserToken(),
         });
     }
 
@@ -62,20 +63,22 @@ export default class FileUpload extends Component {
             }
 
             FrontendDataService.uploadFile(formData, config)
-                // .then( res => {
-                //     console.log(res)
-            // Swal.fire({
-            //     icon: 'success',
-            //     title: 'File sent successfully',
-            //     background: '#fff',
-            //     confirmButtonColor: '#3aa2e7',
-            //     iconColor: '#60e004'
-            // })
-            // this.clearData()
-            //     })
-            //     .catch(err => {
-            //         console.log(err.data)
-            //     })
+                .then( res => {
+                    if (res.status === 200 && res.data) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'File sent successfully',
+                            background: '#fff',
+                            confirmButtonColor: '#3aa2e7',
+                            iconColor: '#60e004'
+                        })
+
+                        this.clearData();
+                    }
+                })
+                .catch(err => {
+                    console.log(err.data)
+                })
         }
     }
 

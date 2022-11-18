@@ -39,14 +39,7 @@ class Message extends Component {
         })
     }
 
-    logoutClicked() {
-        AuthenticationService.logout();
-
-        // redirect to log in
-        this.props.history.push("/");
-    }
-
-    async handleSubmit(event) {
+    handleSubmit(event) {
         event.preventDefault();
 
         const msg = this.state.message;
@@ -71,46 +64,37 @@ class Message extends Component {
 
             const config = {
                 "Authorization": "Bearer " + this.state.token,
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*",
-             "Access-Control-Allow-Headers": 'Origin, X-Requested-With, Content-Type, Accept ',
-            "Access-Control-Allow-Methods": "POST, GET, PUT, OPTIONS, DELETE" ,
-             "Access-Control-Max-Age": 3600
+                "Content-Type": "application/json"
             }
 
             FrontendDataService.sendMessage(sendMsg, config)
-                // .then( res => {
-                //
-                //     console.log(res)
-                //     if (res.status === 200 || res.data) {
-                //         //sucess
-                //
-                //     } else if (res.status === 401) {
-                //         // token expired
-                //         Swal.fire({
-                //             icon: 'warning',
-                //             title: 'Session Timeout',
-                //             background: '#fff',
-                //             confirmButtonColor: '#7a7a7a',
-                //             iconColor: '#e0b004'
-                //         })
-                //
-                //         this.logoutClicked();
-                //
-                //     }
-                //
-                //     // Swal.fire({
-                //     //     icon: 'success',
-                //     //     title: 'Message sent successfully',
-                //     //     background: '#fff',
-                //     //     confirmButtonColor: '#3aa2e7',
-                //     //     iconColor: '#60e004'
-                //     // })
-                //     this.clearData()
-                // })
-                // .catch(err => {
-                //     console.log(err.data)
-                // })
+                .then( res => {
+
+                    if (res.status === 200 && res.data) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Message sent successfully',
+                            background: '#fff',
+                            confirmButtonColor: '#3aa2e7',
+                            iconColor: '#60e004'
+                        })
+                        this.clearData()
+
+                    } else if (res.status === 401) {
+                        // token expired
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Session Timeout',
+                            background: '#fff',
+                            confirmButtonColor: '#7a7a7a',
+                            iconColor: '#e0b004'
+                        })
+                    }
+
+                })
+                .catch(err => {
+                    console.log(err.data)
+                })
         }
     }
 
