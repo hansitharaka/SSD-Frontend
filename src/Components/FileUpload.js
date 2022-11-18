@@ -13,7 +13,8 @@ export default class FileUpload extends Component {
         super(props);
         this.state = {
             username: '',
-            file: undefined,           
+            token: '',
+            file: undefined,
             hasLoginFailed: false,
             showSuccessMsg: false
         }
@@ -25,9 +26,9 @@ export default class FileUpload extends Component {
 
     componentDidMount() {
 
-        const loggedUser = AuthenticationService.loggedUserName();
         this.setState({
-            username: loggedUser
+            username: AuthenticationService.loggedUserName(),
+            token: AuthenticationService.loggedUserToken(),
         });
     }
 
@@ -55,29 +56,29 @@ export default class FileUpload extends Component {
 
             const formData = new FormData();
             formData.append('file', uploadFile)
-            const config = {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                    "Authorization": "Bearer xxxx-xxxx-xxxx" //include token
-                }
-            }
-            
-            // FrontendDataService.uploadFile(formData, config)
-            //     .then( res => {
-            //         // if success
 
-                    // Swal.fire({
-                    //     icon: 'success',
-                    //     title: 'File sent successfully',
-                    //     background: '#fff',
-                    //     confirmButtonColor: '#3aa2e7',
-                    //     iconColor: '#60e004'
-                    // })
-                    // this.clearData()
-            //     })            
-            //     .catch(err => {
-            //         console.log(err.data)
-            //     })
+            const config = {
+                "Content-Type": "multipart/form-data",
+                "Authorization": "Bearer " + this.state.token
+            }
+
+            FrontendDataService.uploadFile(formData, config)
+                .then( res => {
+                    if (res.status === 200 && res.data) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'File sent successfully',
+                            background: '#fff',
+                            confirmButtonColor: '#3aa2e7',
+                            iconColor: '#60e004'
+                        })
+
+                        this.clearData();
+                    }
+                })
+                .catch(err => {
+                    console.log(err.data)
+                })
         }
     }
 
@@ -101,9 +102,9 @@ export default class FileUpload extends Component {
                         </Form.Group>
 
                         <Button type="submit" variant="outline-success" className={"py-2 px-4"}>
-                                Send &nbsp; <FontAwesomeIcon icon={faPaperPlane} />
+                            Send &nbsp; <FontAwesomeIcon icon={faPaperPlane} />
                         </Button>
-                    
+
                     </Form>
                 </Card.Body>
             </Card>

@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_URL = 'https://localhost:8443';
+const API_URL = 'http://localhost:8000';
 
 class FrontendDataService {
 
@@ -8,14 +8,12 @@ class FrontendDataService {
         return axios.post(`${API_URL}/user/signin`, data);
     }
 
-    sendMessage(message) {
-        // return axios.post(`${API_URL}/message/addmessage`, message);
-        return true;
+    sendMessage(message, header) {
+        return axios.post(`${API_URL}/message/addmessage`, message, { headers: header });
     }
 
-    uploadFile(data) {
-        // return axios.post(`${API_URL}/message/upload`, data);
-        return true;
+    uploadFile(data, header) {
+        return axios.post(`${API_URL}/message/upload`, data, { headers: header });
     }
 
 }

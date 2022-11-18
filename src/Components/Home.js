@@ -51,7 +51,7 @@ class Home extends Component {
                                 </Tab>
 
                                 {
-                                    this.state.role === 'manager' || this.state.role === 'admin' ?
+                                    this.state.role === 'Manager' || this.state.role === 'Admin' ?
 
                                         <Tab eventKey="file" title="Files">
                                             <FileUpload />
